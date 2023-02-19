@@ -64,5 +64,6 @@ FN: 000F PLD: 00000000000000000000000000000000
 ```
 but will end up desynchronizing at some point if not straight from the beginning.
 
-**Warning**: the default gr_modtool is to inform GNU Radio Companion to ``import m17`` rather than
-``from gnuradio import m17``. This has to be changed in the YML files.
+**Warning**: the default gr_modtool informs GNU Radio Companion to ``import m17`` rather than
+``from gnuradio import m17``. This has to be changed in the YML files manually as the template
+is erroneous.
