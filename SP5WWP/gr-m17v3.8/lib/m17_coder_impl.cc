@@ -46,13 +46,14 @@ struct LSF
 	uint8_t crc[2];
 } lsf;
 
-void send_Preamble(const uint8_t type,float *out, int *counterout)
+void send_Preamble(const uint8_t type,float *out, int *counterout, float samp_rate)
 {
     float symb;
 
     if(type) //pre-BERT
     {
-        for(uint16_t i=0; i<192/2; i++) //40ms * 4800 = 192
+        // for(uint16_t i=0; i<(int)(40e-3*samp_rate)/2; i++) //40ms * 4800 = 192 TODO JMF
+        for(uint16_t i=0; i<(int)(192/2); i++) //40ms * 4800 = 192
         {
             symb=-3.0;
             // write(STDOUT_FILENO, (uint8_t*)&symb,  sizeof(float));
@@ -66,7 +67,8 @@ void send_Preamble(const uint8_t type,float *out, int *counterout)
     }
     else //pre-LSF
     {
-        for(uint16_t i=0; i<192/2; i++) //40ms * 4800 = 192
+        // for(uint16_t i=0; i<(int)(40e-3*samp_rate)/2; i++) //40ms * 4800 = 192 TODO JMF
+        for(uint16_t i=0; i<(int)(192/2); i++) //40ms * 4800 = 192
         {
             symb=+3.0;
             // write(STDOUT_FILENO, (uint8_t*)&symb,  sizeof(float));
@@ -87,9 +89,9 @@ void send_Syncword(const uint16_t sword, float *out, int *counterout)
     for(uint8_t i=0; i<16; i+=2)
     {
         symb=symbol_map[(sword>>(14-i))&3];
+        // write(STDOUT_FILENO, (uint8_t*)&symb,  sizeof(float));
         out[*counterout]=symb;
         *counterout=(*counterout)+1;
-        // write(STDOUT_FILENO, (uint8_t*)&symb,  sizeof(float));
     }
 }
 
@@ -259,25 +261,31 @@ uint16_t LSF_CRC(struct LSF *in)
 }
 
     m17_coder::sptr
-    m17_coder::make(std::string src_ip,std::string dst_ip,short type,std::string meta, float samp_rate)
+    m17_coder::make(std::string src_id,std::string dst_id,short type,std::string meta, float samp_rate)
     {
       return gnuradio::get_initial_sptr
-        (new m17_coder_impl(src_ip,dst_ip,type,meta,samp_rate));
+        (new m17_coder_impl(src_id,dst_id,type,meta,samp_rate));
     }
 
     /*
      * The private constructor
      */
-    m17_coder_impl::m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta, float samp_rate)
+    m17_coder_impl::m17_coder_impl(std::string src_id,std::string dst_id,short type,std::string meta, float samp_rate)
       : gr::block("m17_coder",
               gr::io_signature::make(1, 1, sizeof(char)),
               gr::io_signature::make(1, 1, sizeof(float)))
               ,_meta(meta), _samp_rate(samp_rate)
-    {set_meta(meta);
-     set_src_ip(src_ip);
-     set_dst_ip(dst_ip);
+{    set_meta(meta);
+     set_src_id(src_id);
+     set_dst_id(dst_id);
      set_samp_rate(samp_rate);
      set_type(type);
+     uint16_t ccrc=LSF_CRC(&lsf);
+     lsf.crc[0]=ccrc>>8;
+     lsf.crc[1]=ccrc&0xFF;
+     _got_lsf=0;                  //have we filled the LSF struct yet?
+     _fn=0;                      //16-bit Frame Number (for the stream mode)
+
 }
 
 void m17_coder_impl::set_samp_rate(float samp_rate)
@@ -285,18 +293,18 @@ void m17_coder_impl::set_samp_rate(float samp_rate)
  printf("New sampling rate: %f\n",_samp_rate); 
 }
 
-void m17_coder_impl::set_src_ip(std::string src_ip)
-{for (int i=0;i<6;i++) {_src_ip[i]=0;}
- sscanf(src_ip.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_src_ip[0], &_src_ip[1], &_src_ip[2], &_src_ip[3],&_src_ip[4],&_src_ip[5]);
- for (int i=0;i<6;i++) {lsf.src[i]=_src_ip[i];}
- printf("new SRC IP: %hhu %hhu %hhu %hhu %hhu %hhu\n",_src_ip[0],_src_ip[1],_src_ip[2],_src_ip[3],_src_ip[4],_src_ip[5]);fflush(stdout);
+void m17_coder_impl::set_src_id(std::string src_id)
+{for (int i=0;i<6;i++) {_src_id[i]=0;}
+ sscanf(src_id.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_src_id[0], &_src_id[1], &_src_id[2], &_src_id[3],&_src_id[4],&_src_id[5]);
+ for (int i=0;i<6;i++) {lsf.src[i]=_src_id[i];}
+ printf("new SRC ID: %hhu %hhu %hhu %hhu %hhu %hhu\n",_src_id[0],_src_id[1],_src_id[2],_src_id[3],_src_id[4],_src_id[5]);fflush(stdout);
 }
 
-void m17_coder_impl::set_dst_ip(std::string dst_ip)
-{for (int i=0;i<6;i++) {_dst_ip[i]=0;}
- sscanf(dst_ip.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_dst_ip[0], &_dst_ip[1], &_dst_ip[2], &_dst_ip[3],&_dst_ip[4],&_dst_ip[5]);
- for (int i=0;i<6;i++) {lsf.dst[i]=_dst_ip[i];}
- printf("new DST IP: %hhu %hhu %hhu %hhu %hhu %hhu\n",_dst_ip[0],_dst_ip[1],_dst_ip[2],_dst_ip[3],_dst_ip[4],_dst_ip[5]);fflush(stdout);
+void m17_coder_impl::set_dst_id(std::string dst_id)
+{for (int i=0;i<6;i++) {_dst_id[i]=0;}
+ sscanf(dst_id.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_dst_id[0], &_dst_id[1], &_dst_id[2], &_dst_id[3],&_dst_id[4],&_dst_id[5]);
+ for (int i=0;i<6;i++) {lsf.dst[i]=_dst_id[i];}
+ printf("new DST ID: %hhu %hhu %hhu %hhu %hhu %hhu\n",_dst_id[0],_dst_id[1],_dst_id[2],_dst_id[3],_dst_id[4],_dst_id[5]);fflush(stdout);
 }
 
 void m17_coder_impl::set_meta(std::string meta)
@@ -313,6 +321,7 @@ void m17_coder_impl::set_type(short type)
  lsf.type[1]=_type>>8;
  printf("new type: %hhd %hhd\n",lsf.type[1],lsf.type[0]);fflush(stdout);
 }
+
     /*
      * Our virtual destructor.
      */
@@ -323,7 +332,7 @@ void m17_coder_impl::set_type(short type)
     void
     m17_coder_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
-      ninput_items_required[0] = noutput_items;
+      ninput_items_required[0] = noutput_items/24; // TODO JMF (if 16 inputs -> 384 outputs)
     }
 
     int
@@ -335,22 +344,21 @@ void m17_coder_impl::set_type(short type)
       const char *in = (const char *) input_items[0];
       float *out = (float *) output_items[0];
 
-uint8_t lich[6];                    //48 bits packed raw, unencoded LICH
-uint8_t lich_encoded[12];           //96 bits packed, encoded LICH
+int countin=0;
+int countout=0;
+
 uint8_t enc_bits[SYM_PER_PLD*2];    //type-2 bits, unpacked
 uint8_t rf_bits[SYM_PER_PLD*2];     //type-4 bits, unpacked
+uint8_t lich[6];                    //48 bits packed raw, unencoded LICH
+uint8_t lich_encoded[12];           //96 bits packed, encoded LICH
 
 uint8_t data[16];                   //raw payload, packed bits
-uint16_t fn=0;                      //16-bit Frame Number (for the stream mode)
 uint8_t lich_cnt=0;                 //0..5 LICH counter, derived from the Frame Number
-uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
 
-      int countin=0;
-      int countout=0;
-
-    {
-        if(got_lsf) //stream frames
-        {
+do {
+    if (countin+16<=noutput_items) 
+       {if(_got_lsf) //stream frames
+          {
             //we could discard the data we already have
 //	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
 //	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
@@ -362,7 +370,7 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
             send_Syncword(SYNC_STR,out,&countout);
 
             //derive the LICH_CNT from the Frame Number
-            lich_cnt=fn%6;
+            lich_cnt=_fn%6;
 
             //extract LICH from the whole LSF
             switch(lich_cnt)
@@ -450,7 +458,7 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
             }
 
             //encode the rest of the frame
-            conv_Encode_Frame(&enc_bits[96], data, fn);
+            conv_Encode_Frame(&enc_bits[96], data, _fn);
 
             //reorder bits
             for(uint16_t i=0; i<SYM_PER_PLD*2; i++)
@@ -488,32 +496,33 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
             printf("\n");*/
 
             //increment the Frame Number
-            fn++;
+            _fn++;
 
             //debug-only
-            if(fn==6*10)
+            if(_fn==6*10)
                 return 0;
         }
         else //LSF
         {
-	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
-	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
-	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
-	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
+//	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
+//	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
 	    for (int i=0;i<16;i++) {data[i]=in[countin];countin++;}
 
             //calculate LSF CRC
-            uint16_t ccrc=LSF_CRC(&lsf);
-            lsf.crc[0]=ccrc>>8;
-            lsf.crc[1]=ccrc&0xFF;
+//            uint16_t ccrc=LSF_CRC(&lsf);
+//            lsf.crc[0]=ccrc>>8;
+//            lsf.crc[1]=ccrc&0xFF;
 
-            got_lsf=1;
+            _got_lsf=1;
+printf("got_lsf=1\n");
 
             //encode LSF data
             conv_Encode_LSF(enc_bits, &lsf);
 
             //send out the preamble and LSF
-            send_Preamble(0,out,&countout); //0 - LSF preamble, as opposed to 1 - BERT preamble
+            send_Preamble(0,out,&countout,_samp_rate); //0 - LSF preamble, as opposed to 1 - BERT preamble
 
             //send LSF syncword
             send_Syncword(SYNC_LSF,out,&countout);
@@ -564,11 +573,12 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
                 printf("%02X", lsf.crc[i]);
             printf("\n");*/
         }
-    }
+      }
+    } while (countin+16<=noutput_items);
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      consume_each (noutput_items);
-
+    consume_each (countin);
+//    printf("\nnoutput_items=%d countin=%d countout=%d\n",noutput_items,countin,countout);
       // Tell runtime system how many output items we produced.
       return countout;
     }

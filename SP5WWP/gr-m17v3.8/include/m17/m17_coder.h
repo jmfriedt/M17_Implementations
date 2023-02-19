@@ -45,10 +45,10 @@ namespace gr {
        * class. m17::m17_coder::make is the public interface for
        * creating new instances.
        */
-       static sptr make(std::string src_ip,std::string dst_ip,short type,std::string meta,float samp_rate);
+       static sptr make(std::string src_id,std::string dst_id,short type,std::string meta,float samp_rate);
        virtual void set_meta(std::string meta)=0;
-       virtual void set_src_ip(std::string src_ip)=0;
-       virtual void set_dst_ip(std::string dst_ip)=0;
+       virtual void set_src_id(std::string src_id)=0;
+       virtual void set_dst_id(std::string dst_id)=0;
        virtual void set_samp_rate(float samp_rate)=0;
 
     };
