@@ -8,13 +8,13 @@ parameters:
   dtype: float
   default: samp_rate
 - id: src_ip
-  label: Source IP
+  label: Source ID
   dtype: string
-  default: '255.255.255.255'
+  default: '01.02.03.04.05.06'
 - id: dst_ip
-  label: Destination IP
+  label: Destination ID
   dtype: string
-  default: '255.255.255.255'
+  default: '255.255.255.255.255.255'
 - id: type
   label: Type
   dtype: short
