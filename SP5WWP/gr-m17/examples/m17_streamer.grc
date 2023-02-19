@@ -59,7 +59,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [736, 152.0]
+    coordinate: [760, 152.0]
     rotation: 0
     state: true
 - name: blocks_throttle_0
@@ -67,11 +67,11 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
+    comment: 'original: (6+6+2+14+16)*8*(1000/40)'
     ignoretag: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_second: (6+6+2+14+16)*8*(1000/40)
+    samples_per_second: samp_rate
     type: byte
     vlen: '1'
   states:
@@ -119,7 +119,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 112.0]
+    coordinate: [408, 112.0]
     rotation: 0
     state: true
 - name: m17_m17_decoder_0
@@ -134,7 +134,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 152.0]
+    coordinate: [624, 152.0]
     rotation: 0
     state: true
 

@@ -496,10 +496,10 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
         }
         else //LSF
         {
-	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
-	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
-	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
-	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
+//	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
+//	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
 	    for (int i=0;i<16;i++) {data[i]=in[countin];countin++;}
 
             //calculate LSF CRC
