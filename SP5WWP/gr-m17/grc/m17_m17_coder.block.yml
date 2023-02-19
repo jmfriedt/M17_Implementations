@@ -2,9 +2,29 @@ id: m17_m17_coder
 label: m17_coder
 category: '[m17]'
 
+parameters:
+- id: ip_src
+  label: Source IP
+  dtype: string
+  default: '255.255.255.255'
+- id: ip_dst
+  label: Destination IP
+  dtype: string
+  default: '255.255.255.255'
+- id: type
+  label: Type
+  dtype: short
+  default: 0
+- id: meta
+  label: Meta
+  dtype: string
+  default: 'helloworld'
+
 templates:
   imports: from gnuradio import m17
-  make: m17.m17_coder()
+  make: m17.m17_coder(${ip_src},${ip_dst},${type},${meta})
+  callbacks:
+    - set_meta(${meta})
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:

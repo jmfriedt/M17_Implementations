@@ -259,21 +259,26 @@ uint16_t LSF_CRC(struct LSF *in)
 }
 
     m17_coder::sptr
-    m17_coder::make()
+    m17_coder::make(std::string src_ip,std::string dst_ip,short type,std::string meta)
     {
       return gnuradio::get_initial_sptr
-        (new m17_coder_impl());
+        (new m17_coder_impl(src_ip,dst_ip,type,meta));
     }
-
 
     /*
      * The private constructor
      */
-    m17_coder_impl::m17_coder_impl()
+    m17_coder_impl::m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta)
       : gr::block("m17_coder",
               gr::io_signature::make(1, 1, sizeof(char)),
               gr::io_signature::make(1, 1, sizeof(float)))
-    {}
+              ,_meta(meta)
+    {set_meta(meta);}
+
+void m17_coder::set_meta(std::string meta)
+{printf("new meta: %s\n",meta.c_str());fflush(stdout);
+ _meta=meta;
+}
 
     /*
      * Our virtual destructor.

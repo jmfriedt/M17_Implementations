@@ -32,7 +32,8 @@ public:
      * class. m17::m17_coder::make is the public interface for
      * creating new instances.
      */
-    static sptr make();
+    static sptr make(std::string src_ip,std::string dst_ip,short type,std::string meta);
+    virtual void set_meta(std::string meta)=0;
 };
 
 } // namespace m17

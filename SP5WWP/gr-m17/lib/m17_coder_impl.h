@@ -17,10 +17,13 @@ class m17_coder_impl : public m17_coder
 {
 private:
     // Nothing to declare in this block.
+    std::string _meta;
 
 public:
-    m17_coder_impl();
+    void set_meta(std::string meta);
+    m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta);
     ~m17_coder_impl();
+
 
     // Where all the action really happens
     void forecast(int noutput_items, gr_vector_int& ninput_items_required);
