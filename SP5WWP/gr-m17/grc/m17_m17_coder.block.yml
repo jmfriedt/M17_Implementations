@@ -26,7 +26,7 @@ parameters:
 
 templates:
   imports: from gnuradio import m17
-  make: m17.m17_coder(${sdr_ip},${dst_ip},${type},${meta},${samp_rate})
+  make: m17.m17_coder(${src_ip},${dst_ip},${type},${meta},${samp_rate})
   callbacks:
     - set_meta(${meta})
     - set_samp_rate(${samp_rate})

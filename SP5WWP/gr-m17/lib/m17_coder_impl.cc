@@ -277,6 +277,7 @@ uint16_t LSF_CRC(struct LSF *in)
      set_src_ip(src_ip);
      set_dst_ip(dst_ip);
      set_samp_rate(samp_rate);
+     set_type(type);
 }
 
 void m17_coder_impl::set_samp_rate(float samp_rate)
@@ -286,23 +287,32 @@ void m17_coder_impl::set_samp_rate(float samp_rate)
 
 void m17_coder_impl::set_src_ip(std::string src_ip)
 {for (int i=0;i<6;i++) {_src_ip[i]=0;}
- sscanf(src_ip.c_str(), "%c.%c.%c.%c.%c.%c", &_src_ip[0], &_src_ip[1], &_src_ip[2], &_src_ip[3],&_src_ip[4],&_src_ip[5]);
+ sscanf(src_ip.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_src_ip[0], &_src_ip[1], &_src_ip[2], &_src_ip[3],&_src_ip[4],&_src_ip[5]);
  for (int i=0;i<6;i++) {lsf.src[i]=_src_ip[i];}
- printf("new SRC IP: %d %d %d %d %d %d\n",_src_ip[0],_src_ip[1],_src_ip[2],_src_ip[3],_src_ip[4],_src_ip[5]);fflush(stdout);
+ printf("new SRC IP: %hhu %hhu %hhu %hhu %hhu %hhu\n",_src_ip[0],_src_ip[1],_src_ip[2],_src_ip[3],_src_ip[4],_src_ip[5]);fflush(stdout);
 }
 
 void m17_coder_impl::set_dst_ip(std::string dst_ip)
 {for (int i=0;i<6;i++) {_dst_ip[i]=0;}
- sscanf(dst_ip.c_str(), "%c.%c.%c.%c.%c.%c", &_dst_ip[0], &_dst_ip[1], &_dst_ip[2], &_dst_ip[3],&_dst_ip[4],&_dst_ip[5]);
- for (int i=0;i<6;i++) {lsf.src[i]=_src_ip[i];}
- printf("new DST IP: %d %d %d %d %d %d\n",_dst_ip[0],_dst_ip[1],_dst_ip[2],_dst_ip[3],_dst_ip[4],_dst_ip[5]);fflush(stdout);
+ sscanf(dst_ip.c_str(), "%hhu.%hhu.%hhu.%hhu.%hhu.%hhu", &_dst_ip[0], &_dst_ip[1], &_dst_ip[2], &_dst_ip[3],&_dst_ip[4],&_dst_ip[5]);
+ for (int i=0;i<6;i++) {lsf.dst[i]=_dst_ip[i];}
+ printf("new DST IP: %hhu %hhu %hhu %hhu %hhu %hhu\n",_dst_ip[0],_dst_ip[1],_dst_ip[2],_dst_ip[3],_dst_ip[4],_dst_ip[5]);fflush(stdout);
 }
 
 void m17_coder_impl::set_meta(std::string meta)
-{printf("new meta: %s\n",meta.c_str());fflush(stdout);
+{int length;
+ printf("new meta: %s\n",meta.c_str());fflush(stdout);
  _meta=meta;
+ if (meta.length()<14) length=meta.length(); else length=14;
+ for (int i=0;i<length;i++) {lsf.meta[i]=_meta[i];}
 }
 
+void m17_coder_impl::set_type(short type)
+{_type=type;
+ lsf.type[0]=_type&0xff;
+ lsf.type[1]=_type>>8;
+ printf("new type: %hhd %hhd\n",lsf.type[1],lsf.type[0]);fflush(stdout);
+}
     /*
      * Our virtual destructor.
      */
@@ -342,10 +352,10 @@ uint8_t got_lsf=0;                  //have we filled the LSF struct yet?
         if(got_lsf) //stream frames
         {
             //we could discard the data we already have
-	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
-	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
-	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
-	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.dst[i]=in[countin];countin++;}
+//	    for (int i=0;i<6;i++) {lsf.src[i]=in[countin];countin++;}
+//	    for (int i=0;i<2;i++) {lsf.type[i]=in[countin];countin++;}
+//	    for (int i=0;i<14;i++) {lsf.meta[i]=in[countin];countin++;}
 	    for (int i=0;i<16;i++) {data[i]=in[countin];countin++;}
 
             //send stream frame syncword
