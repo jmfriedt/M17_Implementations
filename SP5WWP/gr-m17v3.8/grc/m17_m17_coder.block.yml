@@ -7,11 +7,11 @@ parameters:
   label: samp_rate
   dtype: float
   default: samp_rate
-- id: ip_src
+- id: src_ip
   label: Source IP
   dtype: string
   default: '255.255.255.255'
-- id: ip_dst
+- id: dst_ip
   label: Destination IP
   dtype: string
   default: '255.255.255.255'
@@ -26,7 +26,7 @@ parameters:
 
 templates:
   imports: import m17
-  make: m17.m17_coder(${ip_src},${ip_dst},${type},${meta},${samp_rate})
+  make: m17.m17_coder(${src_ip},${dst_ip},${type},${meta},${samp_rate})
   callbacks:
     - set_meta(${meta})
     - set_samp_rate(${samp_rate})
