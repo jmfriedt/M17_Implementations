@@ -275,7 +275,7 @@ uint16_t LSF_CRC(struct LSF *in)
               ,_meta(meta)
     {set_meta(meta);}
 
-void m17_coder::set_meta(std::string meta)
+void m17_coder_impl::set_meta(std::string meta)
 {printf("new meta: %s\n",meta.c_str());fflush(stdout);
  _meta=meta;
 }
