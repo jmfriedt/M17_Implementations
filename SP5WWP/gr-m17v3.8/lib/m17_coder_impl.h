@@ -29,12 +29,16 @@ namespace gr {
 class m17_coder_impl : public m17_coder
 {
 private:
-    // Nothing to declare in this block.
     std::string _meta;
+    char _src_ip[6],_dst_ip[6];
+    float _samp_rate=0.;
 
 public:
+    void set_src_ip(std::string meta);
+    void set_dst_ip(std::string meta);
+    void set_samp_rate(float samp_rate);
     void set_meta(std::string meta);
-    m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta);
+    m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta,float samp_rate);
     ~m17_coder_impl();
 
       // Where all the action really happens

@@ -3,6 +3,10 @@ label: m17_coder
 category: '[m17]'
 
 parameters:
+- id: samp_rate
+  label: samp_rate
+  dtype: float
+  default: samp_rate
 - id: ip_src
   label: Source IP
   dtype: string
@@ -22,9 +26,13 @@ parameters:
 
 templates:
   imports: from gnuradio import m17
-  make: m17.m17_coder(${ip_src},${ip_dst},${type},${meta})
+  make: m17.m17_coder(${ip_src},${ip_dst},${type},${meta},${samp_rate})
   callbacks:
     - set_meta(${meta})
+    - set_samp_rate(${samp_rate})
+    - set_src_ip(${src_ip})
+    - set_dst_ip(${dst_ip})
+    - set_type(${type})
 
 #  Make one 'inputs' list entry per input and one 'outputs' list entry per output.
 #  Keys include:

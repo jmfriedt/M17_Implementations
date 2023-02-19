@@ -259,23 +259,46 @@ uint16_t LSF_CRC(struct LSF *in)
 }
 
     m17_coder::sptr
-    m17_coder::make(std::string src_ip,std::string dst_ip,short type,std::string meta)
+    m17_coder::make(std::string src_ip,std::string dst_ip,short type,std::string meta, float samp_rate)
     {
       return gnuradio::get_initial_sptr
-        (new m17_coder_impl(src_ip,dst_ip,type,meta));
+        (new m17_coder_impl(src_ip,dst_ip,type,meta,samp_rate));
     }
 
     /*
      * The private constructor
      */
-    m17_coder_impl::m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta)
+    m17_coder_impl::m17_coder_impl(std::string src_ip,std::string dst_ip,short type,std::string meta, float samp_rate)
       : gr::block("m17_coder",
               gr::io_signature::make(1, 1, sizeof(char)),
               gr::io_signature::make(1, 1, sizeof(float)))
-              ,_meta(meta)
-    {set_meta(meta);}
+              ,_meta(meta), _samp_rate(samp_rate)
+    {set_meta(meta);
+     set_src_ip(src_ip);
+     set_dst_ip(dst_ip);
+     set_samp_rate(samp_rate);
+}
 
-void m17_coder::set_meta(std::string meta)
+void m17_coder_impl::set_samp_rate(float samp_rate)
+{_samp_rate=samp_rate;
+ printf("New sampling rate: %f\n",_samp_rate); 
+}
+
+void m17_coder_impl::set_src_ip(std::string src_ip)
+{for (int i=0;i<6;i++) {_src_ip[i]=0;}
+ sscanf(src_ip.c_str(), "%c.%c.%c.%c.%c.%c", &_src_ip[0], &_src_ip[1], &_src_ip[2], &_src_ip[3],&_src_ip[4],&_src_ip[5]);
+ for (int i=0;i<6;i++) {lsf.src[i]=_src_ip[i];}
+ printf("new SRC IP: %d %d %d %d %d %d\n",_src_ip[0],_src_ip[1],_src_ip[2],_src_ip[3],_src_ip[4],_src_ip[5]);fflush(stdout);
+}
+
+void m17_coder_impl::set_dst_ip(std::string dst_ip)
+{for (int i=0;i<6;i++) {_dst_ip[i]=0;}
+ sscanf(dst_ip.c_str(), "%c.%c.%c.%c.%c.%c", &_dst_ip[0], &_dst_ip[1], &_dst_ip[2], &_dst_ip[3],&_dst_ip[4],&_dst_ip[5]);
+ for (int i=0;i<6;i++) {lsf.src[i]=_src_ip[i];}
+ printf("new DST IP: %d %d %d %d %d %d\n",_dst_ip[0],_dst_ip[1],_dst_ip[2],_dst_ip[3],_dst_ip[4],_dst_ip[5]);fflush(stdout);
+}
+
+void m17_coder_impl::set_meta(std::string meta)
 {printf("new meta: %s\n",meta.c_str());fflush(stdout);
  _meta=meta;
 }
