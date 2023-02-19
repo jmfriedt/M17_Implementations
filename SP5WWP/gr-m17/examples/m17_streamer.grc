@@ -28,11 +28,23 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 8.0]
+    coordinate: [16, 8.0]
     rotation: 0
     state: enabled
 
 blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '192000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 8.0]
+    rotation: 0
+    state: true
 - name: blocks_null_sink_0
   id: blocks_null_sink
   parameters:
@@ -47,28 +59,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 192.0]
+    coordinate: [736, 152.0]
     rotation: 0
     state: true
-- name: blocks_stream_mux_0
-  id: blocks_stream_mux
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    lengths: (6, 6, 2, 14, 16)
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_inputs: '5'
-    type: byte
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [400, 128.0]
-    rotation: 0
-    state: enabled
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -85,75 +78,15 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 184.0]
+    coordinate: [216, 144.0]
     rotation: 0
     state: enabled
-- name: blocks_vector_source_x_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: byte
-    vector: (0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF)
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 8.0]
-    rotation: 0
-    state: true
-- name: blocks_vector_source_x_0_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: byte
-    vector: (0x00, 0x00, 0x1F, 0x24, 0x5D, 0x51)
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 92.0]
-    rotation: 0
-    state: true
-- name: blocks_vector_source_x_0_1
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: byte
-    vector: (0x00, 0x05)
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 176.0]
-    rotation: 0
-    state: true
 - name: blocks_vector_source_x_0_2
   id: blocks_vector_source_x
   parameters:
     affinity: ''
     alias: ''
-    comment: ''
+    comment: Data to be transmitted
     maxoutbuf: '0'
     minoutbuf: '0'
     repeat: 'True'
@@ -166,28 +99,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [112, 352.0]
-    rotation: 0
-    state: true
-- name: blocks_vector_source_x_0_2_0
-  id: blocks_vector_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    repeat: 'True'
-    tags: '[]'
-    type: byte
-    vector: (0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00)
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 264.0]
+    coordinate: [16, 128.0]
     rotation: 0
     state: true
 - name: m17_m17_coder_0
@@ -196,13 +108,18 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
+    dst_ip: 255.255.255.255.255.255
     maxoutbuf: '0'
+    meta: helloworld
     minoutbuf: '0'
+    samp_rate: samp_rate
+    src_ip: 01.02.03.04.05.06
+    type: '0'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [744, 192.0]
+    coordinate: [384, 112.0]
     rotation: 0
     state: true
 - name: m17_m17_decoder_0
@@ -217,83 +134,13 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 192.0]
-    rotation: 0
-    state: true
-- name: note_0
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: DST
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 28.0]
-    rotation: 0
-    state: true
-- name: note_0_0
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: SRC
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 108.0]
-    rotation: 0
-    state: true
-- name: note_0_1
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: TYPE
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 188.0]
-    rotation: 0
-    state: true
-- name: note_0_2
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: DATA
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 348.0]
-    rotation: 0
-    state: true
-- name: note_0_2_0
-  id: note
-  parameters:
-    alias: ''
-    comment: ''
-    note: META
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [16, 268.0]
+    coordinate: [600, 152.0]
     rotation: 0
     state: true
 
 connections:
-- [blocks_stream_mux_0, '0', blocks_throttle_0, '0']
 - [blocks_throttle_0, '0', m17_m17_coder_0, '0']
-- [blocks_vector_source_x_0, '0', blocks_stream_mux_0, '0']
-- [blocks_vector_source_x_0_0, '0', blocks_stream_mux_0, '1']
-- [blocks_vector_source_x_0_1, '0', blocks_stream_mux_0, '2']
-- [blocks_vector_source_x_0_2, '0', blocks_stream_mux_0, '4']
-- [blocks_vector_source_x_0_2_0, '0', blocks_stream_mux_0, '3']
+- [blocks_vector_source_x_0_2, '0', blocks_throttle_0, '0']
 - [m17_m17_coder_0, '0', m17_m17_decoder_0, '0']
 - [m17_m17_decoder_0, '0', blocks_null_sink_0, '0']
 
