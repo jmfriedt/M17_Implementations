@@ -67,3 +67,12 @@ but will end up desynchronizing at some point if not straight from the beginning
 **Warning**: the default gr_modtool informs GNU Radio Companion to ``import m17`` rather than
 ``from gnuradio import m17``. This has to be changed in the YML files manually as the template
 is erroneous.
+
+
+TODO:
+* Solve short naming issue in 3.8 (int ?)
+* Check non-16 multiple buffer size -- cause of desynchronization? At least avoid crash !
+* Change META as a variable and not a constant in the block
+* Test on 3.8
+* How to handle fixed symbol rate but varying output rate?
+* How to modulate the RF transmitted with the real output?
